@@ -189,6 +189,9 @@ dialog::backdrop{background:rgba(30,36,20,.55);backdrop-filter:blur(4px)}
 @media (hover:none),(max-width:760px){.vnav{display:none}}
 .vtrack{display:flex;width:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .vtrack::-webkit-scrollbar{display:none}
+dialog:focus,dialog:focus-visible{outline:none}
+.viewer .pic .vslide.photo img{box-shadow:none}
+.close:focus:not(:focus-visible){outline:none}
 .vslide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;display:grid;place-items:center;padding:4px 0 14px}
 .viewer .pic .vslide img{max-height:70vh}
 .vdots{display:none;justify-content:center;gap:7px}
@@ -404,7 +407,7 @@ textarea{min-height:92px;resize:vertical}
 </footer>
 
 <!-- painting viewer -->
-<dialog id="viewer" aria-labelledby="v-title">
+<dialog id="viewer" aria-labelledby="v-title" tabindex="-1">
   <button class="close" type="button" data-close aria-label="Close">×</button>
   <div class="viewer">
     <div class="pic"><button class="vnav prev" type="button" id="v-prev" aria-label="Previous photo">‹</button><button class="vnav next" type="button" id="v-next" aria-label="Next photo">›</button><div class="v-main" id="v-pic"></div><div class="thumbs" id="v-thumbs" role="group" aria-label="Photos"></div></div>
@@ -416,7 +419,7 @@ textarea{min-height:92px;resize:vertical}
 </dialog>
 
 <!-- cart drawer -->
-<dialog id="cart" aria-labelledby="cart-title">
+<dialog id="cart" aria-labelledby="cart-title" tabindex="-1">
   <div class="cart-head">
     <h2 id="cart-title">Your cart</h2>
     <button class="close" type="button" data-close aria-label="Close cart">×</button>
@@ -740,11 +743,11 @@ function showPhoto(i,instant){
 }
 function openViewer(id,i=0){
   current=byId(id);
-  $("#v-pic").innerHTML=`<div class="vtrack" id="v-track">${current.imgs.map((src,k)=>`<div class="vslide"><img src="${src}" alt="${esc(current.title)}${k?", "+LABELS[k].toLowerCase():""}" draggable="false"></div>`).join("")}</div><div class="vdots" id="v-dots" aria-hidden="true">${current.imgs.map(()=>"<span></span>").join("")}</div>`;
+  $("#v-pic").innerHTML=`<div class="vtrack" id="v-track">${current.imgs.map((src,k)=>`<div class="vslide${k?" photo":""}"><img src="${src}" alt="${esc(current.title)}${k?", "+LABELS[k].toLowerCase():""}" draggable="false"></div>`).join("")}</div><div class="vdots" id="v-dots" aria-hidden="true">${current.imgs.map(()=>"<span></span>").join("")}</div>`;
   $("#v-thumbs").innerHTML=current.imgs.map((src,k)=>`<button type="button" data-t="${k}" aria-label="${k?LABELS[k]:"Painting"}"><img src="${src}" alt=""></button>`).join("");
   $("#v-desc").innerHTML=descHTML(current);
   addBtnState($("#v-add"),current);
-  viewer.showModal();
+  viewer.showModal();viewer.focus({preventScroll:true});
   const tr=$("#v-track");
   tr.addEventListener("scroll",()=>{cancelAnimationFrame(tr._r);tr._r=requestAnimationFrame(()=>setIdx(Math.round(tr.scrollLeft/tr.clientWidth)))},{passive:true});
   requestAnimationFrame(()=>showPhoto(i,true));
@@ -764,7 +767,7 @@ function show(view){
   $("#cart-checkout-view").hidden=view!=="checkout";
   $("#cart-done-view").hidden=view!=="done";
 }
-function openCart(){show("list");renderCart();drawer.showModal()}
+function openCart(){show("list");renderCart();drawer.showModal();drawer.focus({preventScroll:true})}
 $("#cart-btn").addEventListener("click",openCart);
 document.querySelectorAll("[data-open-cart]").forEach(b=>b.addEventListener("click",openCart));
 function renderCart(){
