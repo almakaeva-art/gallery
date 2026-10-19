@@ -186,7 +186,9 @@ dialog::backdrop{background:rgba(30,36,20,.55);backdrop-filter:blur(4px)}
 .vnav:hover{background:var(--ink);color:var(--white)}
 .vnav{opacity:0;transition:opacity .2s,background .2s,color .2s}
 .viewer .pic:hover .vnav,.vnav:focus-visible{opacity:1}
-@media (hover:none){.vnav{opacity:1}}
+@media (hover:none),(max-width:760px){.vnav{display:none}}
+#v-pic{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+#v-pic img{-webkit-user-drag:none;transition:transform .2s ease}
 .vnav.prev{left:12px}.vnav.next{right:12px}
 @media (max-width:760px){.vnav{width:38px;height:38px;font-size:20px}.vnav.prev{left:6px}.vnav.next{right:6px}}
 .thumbs button{width:58px;height:58px;padding:0;border:2px solid transparent;background:var(--white);cursor:pointer;overflow:hidden}
@@ -734,6 +736,13 @@ function openViewer(id,i=0){
 }
 const step=d=>{const n=current.imgs.length;showPhoto((current._i+d+n)%n)};
 $("#v-prev").addEventListener("click",()=>step(-1));
+(()=>{const el=$("#v-pic");let sx=0,sy=0,on=false;
+  el.addEventListener("touchstart",e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;on=true},{passive:true});
+  el.addEventListener("touchmove",e=>{if(!on)return;const dx=e.touches[0].clientX-sx;const img=el.querySelector("img");if(img)img.style.transform=`translateX(${dx*0.4}px)`},{passive:true});
+  el.addEventListener("touchend",e=>{if(!on)return;on=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    const img=el.querySelector("img");if(img)img.style.transform="";
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy))step(dx<0?1:-1)});
+})();
 $("#v-next").addEventListener("click",()=>step(1));
 $("#v-thumbs").addEventListener("click",e=>{const t=e.target.closest("[data-t]");if(t)showPhoto(+t.dataset.t)});
 viewer.addEventListener("keydown",e=>{if(!current)return;if(e.key==="ArrowRight")showPhoto((current._i+1)%current.imgs.length);if(e.key==="ArrowLeft")showPhoto((current._i+current.imgs.length-1)%current.imgs.length)});
