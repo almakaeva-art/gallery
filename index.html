@@ -91,6 +91,7 @@ section{padding:clamp(64px,8vw,104px) 0}
 .car{position:relative}
 .slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;aspect-ratio:4/5;background:var(--mat);scrollbar-width:none;overscroll-behavior-x:contain}
 .slides::-webkit-scrollbar{display:none}
+.slides,.vtrack{clip-path:inset(0 2px 0 2px)}
 .slide{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;border:0;padding:0;margin:0;cursor:zoom-in;position:relative;overflow:hidden;background:var(--mat);min-height:0}
 .slide.mat{display:grid;place-items:center;padding:11%}
 .slide.mat img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;min-height:0;box-shadow:var(--shadow)}
