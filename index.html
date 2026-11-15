@@ -306,6 +306,7 @@ textarea{min-height:92px;resize:vertical}
     <p>Under the GDPR you can ask me to show, correct or delete your data, limit or object to its use, or send you a copy. You can withdraw your consent at any time by writing to me. You can also complain to the Spanish Data Protection Agency (AEPD, aepd.es).</p>
     <h2>Changes</h2>
     <p>If this policy changes, I’ll publish the new version on this page with a new date.</p>
+
     <a class="btn line back" href="#home">Back to the paintings</a>
   </div>
 </main>
@@ -333,6 +334,7 @@ textarea{min-height:92px;resize:vertical}
     <p>Buying a painting makes you the owner of the artwork itself. The copyright in the painting and in the images on this website stays with me. Please don’t reproduce them commercially without my written permission.</p>
     <h2>Governing law</h2>
     <p>These terms are governed by Spanish law and don’t limit your rights as a consumer. If you have any questions, write to me at <a class="js-email" href="#"></a>.</p>
+
     <a class="btn line back" href="#home">Back to the paintings</a>
   </div>
 </main>
@@ -415,20 +417,45 @@ textarea{min-height:92px;resize:vertical}
 
 /* ===== SETTINGS ===== */
 const CONFIG = {
-  // Form service endpoint, e.g. Formspree: https://formspree.io/f/xxxxxxx
-  // While empty, the order is prepared as a ready-to-send email.
-  orderEndpoint: "",
-  email: "m.almakaeva@mail.ru",
-  instagram: "mariaalmakaeva.art",
-  telegram: "floralinspo",
-  phone: "+34665075948",
-  phoneText: "+34 665 075 948"
+ "orderEndpoint": "",
+ "email": "m.almakaeva@mail.ru",
+ "instagram": "mariaalmakaeva.art",
+ "telegram": "floralinspo",
+ "phone": "+34665075948",
+ "phoneText": "+34 665 075 948",
+ "currencySymbol": "€"
 };
 
 /* ===== PAINTINGS =====
    price: number in euros, or null for "Price coming soon" (can’t be added to cart).
    status: "available" or "sold". */
 const PAINTINGS = [
+ {
+  "id": "azure-bloom",
+  "title": "Azure Bloom",
+  "medium": "Oil and acrylic on canvas",
+  "size": "50 × 40 cm",
+  "price": 350,
+  "status": "available",
+  "imgs": [
+   "images/azure-bloom-1.jpg",
+   "images/azure-bloom-2.jpg",
+   "images/azure-bloom-3.jpg"
+  ]
+ },
+ {
+  "id": "echo-of-a-flower",
+  "title": "Echo of a Flower",
+  "medium": "Oil and acrylic on canvas",
+  "size": "50 × 40 cm",
+  "price": 250,
+  "status": "available",
+  "imgs": [
+   "images/echo-of-a-flower-1.jpg",
+   "images/echo-of-a-flower-2.jpg",
+   "images/echo-of-a-flower-3.jpg"
+  ]
+ },
  {
   "id": "peony",
   "title": "Peony",
@@ -590,7 +617,7 @@ PAINTINGS.forEach(p=>p.img=p.imgs[0]);
 
 /* ===== helpers ===== */
 const $=s=>document.querySelector(s);
-const eur=n=>"€"+n.toLocaleString("en-GB");
+const eur=n=>(CONFIG.currencySymbol||"€")+n.toLocaleString("en-GB");
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const byId=id=>PAINTINGS.find(p=>p.id===id);
 const buyable=p=>p.status==="available"&&typeof p.price==="number";
@@ -610,10 +637,12 @@ setAll(".js-tg",a=>a.href="https://t.me/"+CONFIG.telegram);
 setAll(".js-tg-text",e=>e.textContent="@"+CONFIG.telegram);
 setAll(".js-tel",a=>a.href="tel:"+CONFIG.phone);
 setAll(".js-tel-text",e=>e.textContent=CONFIG.phoneText);
+// hide contact icons that have no value
+[["instagram",".js-ig"],["telegram",".js-tg"],["phone",".js-tel"],["email",".js-mail"]].forEach(([k,sel])=>{if(!CONFIG[k])setAll(sel,e=>e.remove())});
 $("#year").textContent=new Date().getFullYear();
 
 /* ===== cart state (kept in this browser) ===== */
-const KEY="almakaeva-cart";
+const KEY="art-cart:"+location.host+location.pathname;
 let cart=[];
 try{cart=JSON.parse(localStorage.getItem(KEY)||"[]").filter(id=>{const p=byId(id);return p&&buyable(p)})}catch(e){cart=[]}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){}}
